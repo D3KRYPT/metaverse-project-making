@@ -70,3 +70,54 @@ const response = await axios.post(`${BACKEND_URL}/api/v1/signin`, {
 expect(response.statusCode).toBe(403)
 })
 })
+
+describe("user information endpoints", () => {
+  let token = ""
+  let avatarId = ""
+
+  beforeAll(async () => {
+    const username = `kirat-${Math.random()}`
+    const password = "123456"
+
+    axios.post(`${BACKEND_URL}/api/v1/signup`, {
+      username,
+      password, 
+      type : "admin"
+    });
+
+     const response = axios.post(`${BACKEND_URL}/api/v1/signin`, {
+      username,
+      password, 
+    });
+
+    token = response.data.token
+
+    const avatarResponse = await axios.post(`${BACKEND_URL}/api/v1/admin/avatar`, {
+      "imageUrl": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQm3RFDZM21teuCMFYx_AROjt-AzUwDBROFww&s",
+	    "name": "Timmy"
+    })
+    avatarId = avatarResponse.data.avatarId;
+  })
+
+  test("User cant update their metadata with wrong avatar id", async() => {
+      const response = await axios.post(`${BACKEND_URL}/api/v1/user/metadata`, {
+        avatarId : "1234213231"
+      }, {
+        headers:{
+          "authorization" : `Bearer ${token}`
+        }
+      })
+      expect(response.statusCode).toBe(400)
+})
+
+  test("User can update their metadata with right avatar id", async() => {
+    
+  })
+
+})
+
+
+
+
+
+
